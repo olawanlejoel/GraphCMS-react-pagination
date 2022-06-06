@@ -2,7 +2,7 @@
 
 This is a [React](https://nextjs.org/) project bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and structured/developed by Joel Olawanle.
 
-For this app, we made use of react.js to create a blog showcase application that retrieves all blogposts from GraphCMS by querying data using GraphQL and implemented pagination from scratch and using a package. Test it our [here](https://nextjs-ecommerce-graphcms.netlify.app/).
+For this app, we made use of react.js to create a blog showcase application that retrieves all blogposts from GraphCMS by querying data using GraphQL and implemented pagination from scratch and using a package. Test it our [here](https://graphcms-react-pagination.netlify.app/).
 
 ![image](https://user-images.githubusercontent.com/57611810/172117962-2153baf8-3671-485d-9cd6-9e44fc0e9a35.png)
 
