@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { request } from 'graphql-request';
 
-import ReactPaginate from 'react-paginate';
-// import Paginate from './Paginate';
+// import ReactPaginate from 'react-paginate';
+import Paginate from './Paginate';
 
 const App = () => {
 	const [blogPosts, setBlogPosts] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPosts, setTotalPosts] = useState();
 	const [postsPerPage] = useState(3);
 
 	useEffect(() => {
 		const fetchBlogPosts = async () => {
-			const { posts } = await request(
+			const { posts, postsConnection } = await request(
 				'https://api-us-east-1.graphcms.com/v2/cl3zo5a7h1jq701xv8mfyffi4/master',
 				`
 			{ 
-				posts {
+				posts (first: ${postsPerPage}, skip: ${
+					currentPage * postsPerPage - postsPerPage
+				}) {
 					id
 					title
 					excert
@@ -31,38 +34,36 @@ const App = () => {
 					  }
 					}
 				 }
+				 postsConnection {
+					pageInfo {
+					  pageSize
+					}
+				 }
 			}
 		 `
 			);
 
 			setBlogPosts(posts);
+			setTotalPosts(postsConnection.pageInfo.pageSize);
 		};
 
 		fetchBlogPosts();
-	}, []);
+	}, [currentPage, postsPerPage]);
 
-	const indexOfLastPost = currentPage * postsPerPage;
-	const indexOfFirstPost = indexOfLastPost - postsPerPage;
-	const currentPosts = blogPosts.slice(indexOfFirstPost, indexOfLastPost);
+	const paginate = (pageNumber) => {
+		setCurrentPage(pageNumber);
+	};
 
-	// const paginate = (pageNumber) => {
-	// 	setCurrentPage(pageNumber);
-	// };
+	const previousPage = () => {
+		if (currentPage !== 1) {
+			setCurrentPage(currentPage - 1);
+		}
+	};
 
-	// const previousPage = () => {
-	// 	if (currentPage !== 1) {
-	// 		setCurrentPage(currentPage - 1);
-	// 	}
-	// };
-
-	// const nextPage = () => {
-	// 	if (currentPage !== Math.ceil(blogPosts.length / postsPerPage)) {
-	// 		setCurrentPage(currentPage + 1);
-	// 	}
-	// };
-
-	const paginate = ({ selected }) => {
-		setCurrentPage(selected + 1);
+	const nextPage = () => {
+		if (currentPage !== Math.ceil(totalPosts / postsPerPage)) {
+			setCurrentPage(currentPage + 1);
+		}
 	};
 
 	return (
@@ -73,31 +74,32 @@ const App = () => {
 			{blogPosts ? (
 				<div className="blog-content-section">
 					<div className="blog-container">
-						{currentPosts.map((currentPost) => (
-							<div className="blog-post" key={currentPost.id}>
-								<img className="cover-img" src={currentPost.cover.url} alt="" />
-								<h2 className="title">{currentPost.title}</h2>
+						{blogPosts.map((blogPost) => (
+							<div className="blog-post" key={blogPost.id}>
+								<img className="cover-img" src={blogPost.cover.url} alt="" />
+								<h2 className="title">{blogPost.title}</h2>
 
-								<p className="description">{currentPost.excert}</p>
+								<p className="description">{blogPost.excert}</p>
 								<div className="card-details">
 									<div className="lh-details">
 										<img
 											className="author-img"
-											src={currentPost.author.profilePicture.url}
+											src={blogPost.author.profilePicture.url}
 											alt=""
 										/>
 										<p className="date">
-											{new Date(
-												`${currentPost.datePublished}`
-											).toLocaleDateString('en-us', {
-												year: 'numeric',
-												month: 'short',
-												day: 'numeric',
-											})}
+											{new Date(`${blogPost.datePublished}`).toLocaleDateString(
+												'en-us',
+												{
+													year: 'numeric',
+													month: 'short',
+													day: 'numeric',
+												}
+											)}
 										</p>
 									</div>
 									<a
-										href={currentPost.postUrl}
+										href={blogPost.postUrl}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="read-more"
@@ -108,7 +110,7 @@ const App = () => {
 							</div>
 						))}
 					</div>
-					<ReactPaginate
+					{/* <ReactPaginate
 						onPageChange={paginate}
 						pageCount={Math.ceil(blogPosts.length / postsPerPage)}
 						previousLabel={'Prev'}
@@ -118,15 +120,15 @@ const App = () => {
 						previousLinkClassName={'page-number'}
 						nextLinkClassName={'page-number'}
 						activeLinkClassName={'active'}
-					/>
-					{/* <Paginate
+					/> */}
+					<Paginate
 						postsPerPage={postsPerPage}
-						totalPosts={blogPosts.length}
+						totalPosts={totalPosts}
 						currentPage={currentPage}
 						paginate={paginate}
 						previousPage={previousPage}
 						nextPage={nextPage}
-					/> */}
+					/>
 				</div>
 			) : (
 				<div className="loading">Loading...</div>
