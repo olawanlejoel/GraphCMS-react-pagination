@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { request } from 'graphql-request';
 
-// import ReactPaginate from 'react-paginate';
 import Paginate from './Paginate';
 
 const App = () => {
@@ -110,17 +109,6 @@ const App = () => {
 							</div>
 						))}
 					</div>
-					{/* <ReactPaginate
-						onPageChange={paginate}
-						pageCount={Math.ceil(blogPosts.length / postsPerPage)}
-						previousLabel={'Prev'}
-						nextLabel={'Next'}
-						containerClassName={'pagination'}
-						pageLinkClassName={'page-number'}
-						previousLinkClassName={'page-number'}
-						nextLinkClassName={'page-number'}
-						activeLinkClassName={'active'}
-					/> */}
 					<Paginate
 						postsPerPage={postsPerPage}
 						totalPosts={totalPosts}
